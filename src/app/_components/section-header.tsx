@@ -22,13 +22,13 @@ export default function Header() {
             Home
           </Link>
           <Link
-            href="/be-our-partner"
+            href="/news"
             className="text-gray-700 hover:text-gray-900"
           >
             News
           </Link>
-          <Link href="/about" className="text-gray-700 hover:text-gray-900">
-            About
+          <Link href="/wallets" className="text-gray-700 hover:text-gray-900">
+            Wallets
           </Link>
           <Link href={"/login"}>
             <Button>Log in</Button>
@@ -78,11 +78,11 @@ export default function Header() {
             News
           </Link>
           <Link
-            href="/about"
+            href="/wallets"
             className="rounded-lg px-4 py-2 text-gray-700 hover:bg-gray-100"
             onClick={() => setIsMenuOpen(false)}
           >
-            About
+            wallets
           </Link>
 
           <Link href={"/login"}>

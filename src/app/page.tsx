@@ -3,7 +3,10 @@ import Header from "./_components/section-header";
 import Hero from "./_components/section-hero";
 import CompaniesList from "./_components/section-companies-list";
 import MockAnalysis from "./_components/section-mock-analysis";
-import SectionCTA from "./_components/section-features";
+import CTASection from "./_components/section-features";
+import Footer from "./_components/section-footer";
+import LandingPage from "./_components/landing-page";
+
 
 async function Page() {
   return (
@@ -13,8 +16,10 @@ async function Page() {
       <div className="flex flex-col gap-40 mt-10 mb-10">
         <CompaniesList />
         <MockAnalysis />
-        <SectionCTA />
+        <LandingPage />
+        <CTASection />
       </div>
+      <Footer />
     </main>
   );
 }
