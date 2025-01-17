@@ -1,7 +1,7 @@
 import React from "react";
 import Header from "../_components/section-header";
 import Footer from "../_components/section-footer";
-import SectionWallet from "../_components/section-wallets";
+import SectionWallet from "./_components/section-wallets";
 
 async function WalletPage() {
   return (

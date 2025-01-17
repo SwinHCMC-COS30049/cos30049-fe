@@ -1,18 +1,20 @@
 "use client";
-import React from 'react';
-import { Search } from 'lucide-react';
-import { Card, CardHeader, CardContent, CardFooter } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
+import React from "react";
+import { Search } from "lucide-react";
+import { Card, CardHeader, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 
 const SectionWallet = () => {
-  const [searchQuery, setSearchQuery] = React.useState('');
+  const [searchQuery, setSearchQuery] = React.useState("");
 
   return (
     <section className="container mx-auto px-5 py-12 mt-20 space-y-12">
       {/* Header Section */}
       <div className="mb-8 text-center">
         <h1 className="text-4xl font-bold text-gray-900">crypto. Wallet</h1>
-        <p className="text-gray-600 mt-2">Manage your digital assets securely</p>
+        <p className="text-gray-600 mt-2">
+          Manage your digital assets securely
+        </p>
       </div>
 
       {/* Search Section */}

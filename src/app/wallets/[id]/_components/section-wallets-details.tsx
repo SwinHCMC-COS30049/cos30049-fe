@@ -1,7 +1,7 @@
-import React from 'react';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Card, CardContent } from '@/components/ui/card';
-import { ArrowUpRight, ArrowDownRight, Clock } from 'lucide-react';
+import React from "react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Card, CardContent } from "@/components/ui/card";
+import { ArrowUpRight, ArrowDownRight } from "lucide-react";
 
 export default function SectionWalletDetails() {
   return (
@@ -17,9 +17,15 @@ export default function SectionWalletDetails() {
       {/* Tabs */}
       <Tabs defaultValue="details" className="w-full">
         <TabsList className="w-full max-w-md">
-          <TabsTrigger value="details" className="flex-1">Details</TabsTrigger>
-          <TabsTrigger value="neighbors" className="flex-1">Neighbors</TabsTrigger>
-          <TabsTrigger value="history" className="flex-1">History</TabsTrigger>
+          <TabsTrigger value="details" className="flex-1">
+            Details
+          </TabsTrigger>
+          <TabsTrigger value="neighbors" className="flex-1">
+            Neighbors
+          </TabsTrigger>
+          <TabsTrigger value="history" className="flex-1">
+            History
+          </TabsTrigger>
         </TabsList>
 
         {/* Details Tab Content */}
@@ -36,7 +42,9 @@ export default function SectionWalletDetails() {
                 </div>
                 <div className="space-y-1">
                   <p className="text-sm text-gray-500">24h Change</p>
-                  <p className="text-lg font-semibold text-green-600">+0.234 ETH</p>
+                  <p className="text-lg font-semibold text-green-600">
+                    +0.234 ETH
+                  </p>
                   <p className="text-sm text-green-600">+2.45%</p>
                 </div>
                 <div className="space-y-1">
@@ -60,7 +68,9 @@ export default function SectionWalletDetails() {
                     </div>
                     <div>
                       <p className="font-medium">Received</p>
-                      <p className="text-sm text-gray-500">From: 0x742d...f44e</p>
+                      <p className="text-sm text-gray-500">
+                        From: 0x742d...f44e
+                      </p>
                     </div>
                   </div>
                   <div className="text-right">
@@ -133,7 +143,9 @@ export default function SectionWalletDetails() {
         <TabsContent value="neighbors">
           <Card>
             <CardContent className="pt-6">
-              <p className="text-gray-500">Connected wallets will appear here</p>
+              <p className="text-gray-500">
+                Connected wallets will appear here
+              </p>
             </CardContent>
           </Card>
         </TabsContent>
@@ -142,7 +154,9 @@ export default function SectionWalletDetails() {
         <TabsContent value="history">
           <Card>
             <CardContent className="pt-6">
-              <p className="text-gray-500">Transaction history will appear here</p>
+              <p className="text-gray-500">
+                Transaction history will appear here
+              </p>
             </CardContent>
           </Card>
         </TabsContent>
