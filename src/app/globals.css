@@ -1,0 +1,200 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer utilities {
+  .animation-delay-2000 {
+    animation-delay: 2000ms;
+  }
+
+  .animation-delay-4000 {
+    animation-delay: 4000ms;
+  }
+
+  .animation-delay-6000 {
+    animation-delay: 6000ms;
+  }
+}
+
+/* FONTS */
+@font-face {
+  font-family: "Figtree";
+  src: url("/fonts/Figtree/Figtree-VariableFont_wght.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Poppins";
+  font-style: normal;
+  font-weight: 100;
+  src: url("/fonts/Poppins/Poppins-Thin.ttf") format("truetype");
+}
+@font-face {
+  font-family: "Poppins";
+  font-style: italic;
+  font-weight: 100;
+  src: url("/fonts/Poppins/Poppins-ThinItalic.ttf") format("truetype");
+}
+@font-face {
+  font-family: "Poppins";
+  font-style: normal;
+  font-weight: 200;
+  src: url("/fonts/Poppins/Poppins-ExtraLight.ttf") format("truetype");
+}
+@font-face {
+  font-family: "Poppins";
+  font-style: italic;
+  font-weight: 200;
+  src: url("/fonts/Poppins/Poppins-ExtraLightItalic.ttf") format("truetype");
+}
+@font-face {
+  font-family: "Poppins";
+  font-style: normal;
+  font-weight: 300;
+  src: url("/fonts/Poppins/Poppins-Light.ttf") format("truetype");
+}
+@font-face {
+  font-family: "Poppins";
+  font-style: italic;
+  font-weight: 300;
+  src: url("/fonts/Poppins/Poppins-LightItalic.ttf") format("truetype");
+}
+@font-face {
+  font-family: "Poppins";
+  font-style: normal;
+  font-weight: 400;
+  src: url("/fonts/Poppins/Poppins-Regular.ttf") format("truetype");
+}
+@font-face {
+  font-family: "Poppins";
+  font-style: italic;
+  font-weight: 400;
+  src: url("/fonts/Poppins/Poppins-Italic.ttf") format("truetype");
+}
+@font-face {
+  font-family: "Poppins";
+  font-style: normal;
+  font-weight: 500;
+  src: url("/fonts/Poppins/Poppins-Medium.ttf") format("truetype");
+}
+@font-face {
+  font-family: "Poppins";
+  font-style: italic;
+  font-weight: 500;
+  src: url("/fonts/Poppins/Poppins-MediumItalic.ttf") format("truetype");
+}
+@font-face {
+  font-family: "Poppins";
+  font-style: normal;
+  font-weight: 600;
+  src: url("/fonts/Poppins/Poppins-SemiBold.ttf") format("truetype");
+}
+@font-face {
+  font-family: "Poppins";
+  font-style: italic;
+  font-weight: 600;
+  src: url("/fonts/Poppins/Poppins-SemiBoldItalic.ttf") format("truetype");
+}
+@font-face {
+  font-family: "Poppins";
+  font-style: normal;
+  font-weight: 700;
+  src: url("/fonts/Poppins/Poppins-Bold.ttf") format("truetype");
+}
+@font-face {
+  font-family: "Poppins";
+  font-style: italic;
+  font-weight: 700;
+  src: url("/fonts/Poppins/Poppins-BoldItalic.ttf") format("truetype");
+}
+@font-face {
+  font-family: "Poppins";
+  font-style: normal;
+  font-weight: 800;
+  src: url("/fonts/Poppins/Poppins-ExtraBold.ttf") format("truetype");
+}
+@font-face {
+  font-family: "Poppins";
+  font-style: italic;
+  font-weight: 800;
+  src: url("/fonts/Poppins/Poppins-ExtraBoldItalic.ttf") format("truetype");
+}
+@font-face {
+  font-family: "Poppins";
+  font-style: normal;
+  font-weight: 900;
+  src: url("/fonts/Poppins/Poppins-Black.ttf") format("truetype");
+}
+
+@layer base {
+  :root {
+    --background: hsl(155, 36%, 100%);
+    --foreground: hsl(155, 71%, 1%);
+    --muted: hsl(155, 5%, 95%);
+    --muted-foreground: hsl(155, 8%, 33%);
+    --popover: hsl(155, 36%, 100%);
+    --popover-foreground: hsl(155, 71%, 1%);
+    --card: hsl(155, 36%, 100%);
+    --card-foreground: hsl(155, 71%, 1%);
+    --border: hsl(155, 13%, 90%);
+    --input: hsl(155, 13%, 90%);
+    --primary: hsl(155, 58%, 29%);
+    --primary-foreground: hsl(0, 0%, 100%);
+    --secondary: hsl(155, 14%, 80%);
+    --secondary-foreground: hsl(155, 14%, 20%);
+    --accent: hsl(155, 23%, 71%);
+    --accent-foreground: hsl(155, 23%, 11%);
+    --destructive: hsl(8, 87%, 43%);
+    --destructive-foreground: hsl(0, 0%, 100%);
+    --ring: hsl(155, 58%, 29%);
+    --chart-1: hsl(155, 78%, 35%);
+    --chart-2: hsl(200, 70%, 45%);
+    --chart-3: hsl(45, 90%, 55%);
+    --chart-4: hsl(8, 85%, 50%);
+    --chart-5: hsl(290, 60%, 50%);
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: hsl(155, 30%, 0%);
+    --foreground: hsl(155, 29%, 98%);
+    --muted: hsl(155, 5%, 5%);
+    --muted-foreground: hsl(155, 8%, 67%);
+    --popover: hsl(155, 30%, 0%);
+    --popover-foreground: hsl(155, 29%, 98%);
+    --card: hsl(155, 30%, 0%);
+    --card-foreground: hsl(155, 29%, 98%);
+    --border: hsl(155, 13%, 15%);
+    --input: hsl(155, 13%, 15%);
+    --primary: hsl(155, 58%, 29%);
+    --primary-foreground: hsl(0, 0%, 100%);
+    --secondary: hsl(155, 10%, 18%);
+    --secondary-foreground: hsl(155, 10%, 78%);
+    --accent: hsl(155, 19%, 25%);
+    --accent-foreground: hsl(155, 19%, 85%);
+    --destructive: hsl(8, 87%, 49%);
+    --destructive-foreground: hsl(0, 0%, 100%);
+    --ring: hsl(155, 58%, 29%);
+    --chart-1: hsl(155, 78%, 45%);
+    --chart-2: hsl(200, 80%, 50%);
+    --chart-3: hsl(45, 90%, 65%);
+    --chart-4: hsl(8, 85%, 60%);
+    --chart-5: hsl(290, 70%, 60%);
+    --radius: 0.5rem;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  /* SCROLL LOCK - RADIX SELECT HAS PROBLEMS */
+  html body[data-scroll-locked] {
+    overflow: visible !important;
+    margin-right: 0 !important;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+}
