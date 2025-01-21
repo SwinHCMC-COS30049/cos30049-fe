@@ -3,6 +3,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent } from "@/components/ui/card";
 import SectionWalletDetails from "./section-wallet-details";
 import SectionWalletNeighbors from "./section-wallet-neighbors";
+import TransactionTable from "./graph/section-history-table";
 import { WalletDto } from "@/app/_api-types/wallets";
 import { ReactFlowProvider } from "@xyflow/react";
 
@@ -60,9 +61,7 @@ export default function SectionWallet({ wallet }: { wallet: WalletDto }) {
         >
           <Card>
             <CardContent className="pt-6">
-              <p className="text-gray-500">
-                Transaction history will appear here
-              </p>
+              <TransactionTable />
             </CardContent>
           </Card>
         </TabsContent>
