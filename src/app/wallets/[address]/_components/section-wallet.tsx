@@ -5,7 +5,7 @@ import { WalletDetailsDto } from "@/app/_api-types/wallets";
 import { ReactFlowProvider } from "@xyflow/react";
 import { TransactionsTable } from "./table/transactions-table";
 import { notFound } from "next/navigation";
-
+import SectionNeo4jGraph from "./section-neo4j-graph";
 export default function SectionWallet({ data }: { data: WalletDetailsDto }) {
   const { wallet } = data;
 
@@ -36,6 +36,9 @@ export default function SectionWallet({ data }: { data: WalletDetailsDto }) {
           <TabsTrigger value="history" className="flex-1">
             History
           </TabsTrigger>
+          <TabsTrigger value="graph" className="flex-1">
+            Graph
+          </TabsTrigger>
         </TabsList>
 
         {/* Details Tab Content */}
@@ -65,6 +68,17 @@ export default function SectionWallet({ data }: { data: WalletDetailsDto }) {
           className="data-[state=inactive]:hidden"
         >
           <TransactionsTable />
+        </TabsContent>
+
+        {/* Graph Tab Content */}
+        <TabsContent
+          value="graph"
+          forceMount
+          className="data-[state=inactive]:hidden"
+        >
+          <ReactFlowProvider>
+            <SectionNeo4jGraph wallet={wallet} />
+          </ReactFlowProvider>
         </TabsContent>
       </Tabs>
     </div>

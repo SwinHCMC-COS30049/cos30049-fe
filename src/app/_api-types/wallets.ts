@@ -1,6 +1,6 @@
 import { components, paths } from "@/lib/types";
 
-export type WalletDto = components["schemas"]["WalletDto"];
+export type WalletDto = components["schemas"]["WalletDto"] & { transactionCount?: number };
 
 export type WalletDetailsDto = components["schemas"]["GetWalletDetailsOutput"];
 

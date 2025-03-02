@@ -18,9 +18,9 @@ import "@xyflow/react/dist/style.css";
 import {
   ErrorGetWalletNeighborsResponse,
   WalletDto,
+  SuccessGetWalletNeighborsResponse,
 } from "@/app/_api-types/wallets";
 import { NodeType, nodeTypes } from "./graph/node-types";
-import { SuccessGetWalletNeighborsResponse } from "@/app/_api-types/wallets";
 import { WalletNode } from "./graph/wallet-node";
 import WalletNodeContextMenu, {
   WalletNodeContextMenuProps,
@@ -160,7 +160,7 @@ export default function SectionWalletNeighbors({
           return [
             ...prevNodes,
             ...(successData.data
-              ? successData.data.map((dstWallet, index) => ({
+              ? successData.data.map((dstWallet: WalletDto, index: number) => ({
                   id: `${dstWallet.address}-${level}`,
                   type: NodeType.WALLET_NODE,
                   data: dstWallet,
@@ -177,7 +177,7 @@ export default function SectionWalletNeighbors({
           return [
             ...prevEdges,
             ...(successData.data
-              ? successData.data.map((dstWallet) => ({
+              ? successData.data.map((dstWallet: WalletDto) => ({
                   id: `${srcWallet.address}-${dstWallet.address}-${level}`,
                   source:
                     level === 1
