@@ -9,7 +9,7 @@ export type Neo4jWalletNode = Node<WalletDto>;
 // Neo4jWalletNode component to display wallet information in a graph node
 export default function Neo4jWalletNode({ data, selected }: NodeProps<Neo4jWalletNode>) {
   return (
-    <div className="rounded-full bg-transparent">
+    <>
       <div
         className={`relative w-[120px] h-[120px] rounded-full shadow-lg flex items-center justify-center ${selected ? 'ring-4 ring-blue-400' : ''}`}
         style={{
@@ -47,6 +47,6 @@ export default function Neo4jWalletNode({ data, selected }: NodeProps<Neo4jWalle
       </div>
       <Handle type="target" position={Position.Left} className="w-3 h-3 !bg-gray-400" />
       <Handle type="source" position={Position.Right} className="w-3 h-3 !bg-gray-400" />
-    </div>
+    </>
   );
 }

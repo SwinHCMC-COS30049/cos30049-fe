@@ -1,7 +1,8 @@
 "use client";
 
 import { Card, CardContent } from "@/components/ui/card";
-import { LoaderCircle, RefreshCcw } from "lucide-react";
+import { LoaderCircle, RefreshCcw, X } from "lucide-react";
+import { format } from "date-fns";
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import {
   ReactFlow,
@@ -24,7 +25,6 @@ import { Neo4jWalletNode } from "./graph/neo4j-wallet-node";
 import WalletNodeContextMenu, {
   WalletNodeContextMenuProps,
 } from "./graph/wallet-node-context-menu";
-import { TransactionDetailDialog } from "./transaction-detail-dialog";
 import { NodeType, nodeTypes } from "./graph/node-types";
 
 export default function SectionNeo4jGraph({
@@ -245,7 +245,7 @@ export default function SectionNeo4jGraph({
   }, [level, selectedWallets, srcWallet.address]);
 
   return (
-    <Card className="w-full h-[800px]">
+    <Card className="w-full h-[800px] relative">
       <CardContent className="pt-6 h-full w-full">
         {loading && (
           <div className="flex items-center justify-center h-full">
@@ -260,48 +260,112 @@ export default function SectionNeo4jGraph({
         )}
 
         {!loading && !error && (
-          <ReactFlow
-            nodes={nodes}
-            edges={edges}
-            onNodesChange={onNodesChange}
-            onEdgesChange={onEdgesChange}
-            onNodeClick={onNodeClick}
-            onEdgeClick={onEdgeClick}
-            onNodeContextMenu={onNodeRightClick}
-            onPaneClick={onPaneClick}
-            onPaneContextMenu={onPaneRightClick}
-            fitView
-            proOptions={{ hideAttribution: true }}
-            nodesConnectable={false}
-            edgesReconnectable={false}
-            nodesDraggable={false}
-            nodeTypes={nodeTypes}
-            className="rounded-sm"
-            zoomOnScroll={true}
-            minZoom={0.25}
-          >
-            <Controls showInteractive={false} className="rounded-sm">
-              <ControlButton onClick={refreshGraph}>
-                <RefreshCcw />
-              </ControlButton>
-            </Controls>
-            <MiniMap pannable zoomable className="rounded-sm" />
-            <Background />
-            {contextMenu && (
-              <WalletNodeContextMenu
-                ref={contextMenuRef}
-                onClick={onPaneClick}
-                {...contextMenu}
-              />
-            )}
+          <>
+            <ReactFlow
+              nodes={nodes}
+              edges={edges}
+              onNodesChange={onNodesChange}
+              onEdgesChange={onEdgesChange}
+              onNodeClick={onNodeClick}
+              onEdgeClick={onEdgeClick}
+              onNodeContextMenu={onNodeRightClick}
+              onPaneClick={onPaneClick}
+              onPaneContextMenu={onPaneRightClick}
+              fitView
+              proOptions={{ hideAttribution: true }}
+              nodesConnectable={false}
+              edgesReconnectable={false}
+              nodesDraggable={false}
+              nodeTypes={nodeTypes}
+              className="rounded-sm"
+              zoomOnScroll={true}
+              minZoom={0.25}
+            >
+              <Controls showInteractive={false} className="rounded-sm">
+                <ControlButton onClick={refreshGraph}>
+                  <RefreshCcw />
+                </ControlButton>
+              </Controls>
+              <MiniMap pannable zoomable className="rounded-sm" />
+              <Background />
+              {contextMenu && (
+                <WalletNodeContextMenu
+                  ref={contextMenuRef}
+                  onClick={onPaneClick}
+                  {...contextMenu}
+                />
+              )}
+            </ReactFlow>
+
+            {/* Transaction Details Side Panel */}
             {selectedTransaction && (
-              <TransactionDetailDialog
-                transaction={selectedTransaction}
-              >
-                <div style={{ display: "none" }} />
-              </TransactionDetailDialog>
+              <div className="absolute top-0 right-0 h-full w-96 bg-white shadow-lg border-l border-gray-200 overflow-y-auto">
+                <div className="p-6">
+                  <div className="flex justify-between items-center mb-6">
+                    <h3 className="text-lg font-semibold">Transaction Details</h3>
+                    <button
+                      onClick={() => setSelectedTransaction(null)}
+                      className="p-1 hover:bg-gray-100 rounded-full"
+                    >
+                      <X className="h-5 w-5 text-gray-500" />
+                    </button>
+                  </div>
+
+                  <div className="space-y-4">
+                    <div>
+                      <label className="text-sm font-medium text-gray-600">Hash</label>
+                      <p className="mt-1 text-sm break-all">{selectedTransaction.hash}</p>
+                    </div>
+
+                    <div>
+                      <label className="text-sm font-medium text-gray-600">From</label>
+                      <p className="mt-1 text-sm break-all">{selectedTransaction.sourceAddress}</p>
+                    </div>
+
+                    <div>
+                      <label className="text-sm font-medium text-gray-600">To</label>
+                      <p className="mt-1 text-sm break-all">{selectedTransaction.destinationAddress}</p>
+                    </div>
+
+                    <div>
+                      <label className="text-sm font-medium text-gray-600">Value</label>
+                      <p className="mt-1 text-sm">{selectedTransaction.value || "0"} ETH</p>
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium text-gray-600">Timestamp</label>
+                      <p className="mt-1 text-sm">
+                        {selectedTransaction.blockTimestamp
+                          ? (() => {
+                              try {
+                                // Extract timestamp value from object if needed
+                                const timestampValue = typeof selectedTransaction.blockTimestamp === 'object'
+                                  ? selectedTransaction.blockTimestamp.low || selectedTransaction.blockTimestamp.value
+                                  : selectedTransaction.blockTimestamp;
+                                
+                                // Convert to number if it's not already
+                                const timestamp = Number(timestampValue);
+                                
+                                if (!isNaN(timestamp)) {
+                                  const dateValue = timestamp < 10000000000
+                                    ? new Date(timestamp * 1000)
+                                    : new Date(timestamp);
+                                  return format(dateValue, "PPpp");
+                                }
+                                return "Invalid timestamp";
+                              } catch (error) {
+                                console.error("Error formatting date:", error);
+                                return "Date conversion error";
+                              }
+                            })()
+                          : "No timestamp available"
+                        }
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
             )}
-          </ReactFlow>
+          </>
         )}
       </CardContent>
     </Card>
