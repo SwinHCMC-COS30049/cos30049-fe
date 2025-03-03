@@ -33,6 +33,7 @@ export default function SectionNeo4jGraph({
   wallet: WalletDto;
 }) {
   const [selectedWallets, setSelectedWallets] = useState<WalletDto[]>([wallet]);
+  const [expandedNodes, setExpandedNodes] = useState<Set<string>>(new Set());
   const level = selectedWallets.length;
   const srcWallet = selectedWallets[selectedWallets.length - 1];
   const [loading, setLoading] = useState(true);
@@ -42,6 +43,19 @@ export default function SectionNeo4jGraph({
   const [contextMenu, setContextMenu] = useState<WalletNodeContextMenuProps | null>(null);
   const contextMenuRef = useRef<HTMLDivElement | null>(null);
   const [selectedTransaction, setSelectedTransaction] = useState<any>(null);
+  const [nodePositions, setNodePositions] = useState<Record<string, { x: number; y: number }>>({});
+
+  // Calculate node position based on level and index
+  const calculateNodePosition = (level: number, index: number, totalNodes: number) => {
+    const baseX = level * 400;
+    const spacing = 200;
+    const totalHeight = (totalNodes - 1) * spacing;
+    const startY = -totalHeight / 2;
+    return {
+      x: baseX,
+      y: startY + index * spacing
+    };
+  };
 
   // Handle node click to show wallet details
   const onNodeClick: NodeMouseHandler<Neo4jWalletNode> = useCallback(
@@ -100,7 +114,12 @@ export default function SectionNeo4jGraph({
     (event, node) => {
       event.preventDefault();
       const clickedLevel = Number(node.id.split("-")[1]);
-
+  
+      // Check if the node has already been expanded
+      if (expandedNodes.has(node.data.address)) {
+        return;
+      }
+  
       if (
         node.data.address === selectedWallets[0].address &&
         (level === 1 || clickedLevel === 1)
@@ -108,30 +127,62 @@ export default function SectionNeo4jGraph({
         return;
       }
 
+      // Check if the node exists as a source in any transaction
+      const isSource = neighborsData?.data?.transactions?.some(
+        (tx: any) => tx.sourceAddress === node.data.address
+      );
+
+      // Check if the node exists as a destination in any transaction
+      const isDestination = neighborsData?.data?.transactions?.some(
+        (tx: any) => tx.destinationAddress === node.data.address
+      );
+
+      // Allow expansion if the node is both a source and destination
+      if (!isSource && !isDestination) {
+        return; // Don't expand if the node is neither a source nor a destination
+      }
+
       if (clickedLevel < level) {
         setNodes((prevNodes) => {
+          // Keep contract nodes and nodes at or below clicked level
           return prevNodes.filter(
-            (n) => Number(n.id.split("-")[1]) <= clickedLevel
+            (n) => {
+              const nodeLevel = Number(n.id.split("-")[1]);
+              return nodeLevel <= clickedLevel || n.data.type?.toLowerCase() === 'contract';
+            }
           );
         });
-
+  
         setEdges((prevEdges) => {
           return prevEdges.filter((e) => {
             const targetLevel = Number(e.target.split("-")[1]);
             return targetLevel <= clickedLevel;
           });
         });
-
+  
         setSelectedWallets((prev) => {
           return [...prev.slice(0, clickedLevel), node.data];
         });
-
+  
+        // Clear expanded nodes after this level
+        setExpandedNodes((prev) => {
+          const newExpandedNodes = new Set(prev);
+          selectedWallets.slice(clickedLevel).forEach((wallet) => {
+            if (wallet.type?.toLowerCase() !== 'contract') {
+              newExpandedNodes.delete(wallet.address);
+            }
+          });
+          return newExpandedNodes;
+        });
+  
         return;
       }
-
+  
+      // Add the node to expanded nodes set
+      setExpandedNodes((prev) => new Set([...prev, node.data.address]));
       setSelectedWallets((prev) => [...prev, node.data]);
     },
-    [selectedWallets, level, setEdges, setNodes]
+    [selectedWallets, level, setEdges, setNodes, expandedNodes, neighborsData]
   );
 
   // Reset graph to initial state
@@ -140,6 +191,7 @@ export default function SectionNeo4jGraph({
     setEdges([]);
     setSelectedWallets([wallet]);
     setContextMenu(null);
+    setExpandedNodes(new Set());
   };
 
   // Fetch wallet data and update graph
@@ -185,7 +237,8 @@ export default function SectionNeo4jGraph({
             borderColor: detailsData.wallet?.type?.toLowerCase() === "contract" ? "#f5c2c7" : "#badbcc",
             borderRadius: "9999px"
           },
-          position: { x: (level - 1) * 300, y: 0 },
+          position: nodePositions[srcWallet.address] || { x: (level - 1) * 400, y: 0 },
+          draggable: true
         };
 
         const neighborNodes = (neighborsData.data?.neighbors || []).map((neighbor: any, index: number) => ({
@@ -201,17 +254,49 @@ export default function SectionNeo4jGraph({
             borderColor: neighbor.type?.toLowerCase() === "contract" ? "#f5c2c7" : "#badbcc",
             borderRadius: "9999px"
           },
-          position: {
-            x: level * 400,
-            y: (index - ((neighborsData.data?.neighbors || []).length - 1) / 2) * 150,
-          },
+          position: calculateNodePosition(level + 1, index, (neighborsData.data?.neighbors || []).length),
+          draggable: true
         }));
 
+        // Update nodes in useEffect
         setNodes((prevNodes) => {
+          // Filter out any existing nodes with the same addresses
           const existingNodes = prevNodes.filter(
-            (n) => Number(n.id.split("-")[1]) < level
+            (n) => Number(n.id.split('-')[1]) <= level || n.data.type?.toLowerCase() === 'contract'
           );
-          return [...existingNodes, sourceNode, ...neighborNodes];
+          
+          // Create a map of existing addresses and their types for quick lookup
+          const existingNodeInfo = new Map(
+            existingNodes.map(node => [node.data.address, {
+              position: node.position,
+              type: node.data.type
+            }])
+          );
+          
+          // Only add neighbor nodes that don't already exist or update existing ones
+          const uniqueNeighborNodes = neighborNodes.filter(
+            (node: { data: { address: string; type: string } }) => {
+              const existingInfo = existingNodeInfo.get(node.data.address);
+              // If node exists, ensure we keep its original type
+              if (existingInfo) {
+                node.data.type = existingInfo.type;
+                return node.data.type?.toLowerCase() === 'contract';
+              }
+              return !existingInfo;
+            }
+          ).map((node: any) => ({
+            ...node,
+            // Use existing position if available, otherwise use new position
+            position: existingNodeInfo.get(node.data.address)?.position || node.position
+          }));
+          
+          // Update source node type if it already exists
+          const existingSourceInfo = existingNodeInfo.get(srcWallet.address);
+          if (existingSourceInfo) {
+            sourceNode.data.type = existingSourceInfo.type;
+          }
+          
+          return [...existingNodes, sourceNode, ...uniqueNeighborNodes];
         });
 
         // Update edges
@@ -223,9 +308,21 @@ export default function SectionNeo4jGraph({
             value: tx.value || "0",
             timestamp: tx.blockTimestamp,
           },
-          label: "Transaction",
-          animated: true,
-          style: { stroke: "#666", strokeWidth: 2 },
+          label: `${tx.value || "0"} ETH`,
+          labelStyle: { fill: "#666", fontSize: 10 },
+          labelBgStyle: { fill: "#fff", fillOpacity: 0.8 },
+          labelBgPadding: [4, 2],
+          style: { 
+            stroke: "#666", 
+            strokeWidth: 2,
+            strokeOpacity: 0.8,
+          },
+          markerEnd: {
+            type: "arrowclosed",
+            color: "#666",
+            width: 20,
+            height: 20,
+          },
         }));
 
         setEdges((prevEdges) => {
@@ -275,7 +372,7 @@ export default function SectionNeo4jGraph({
               proOptions={{ hideAttribution: true }}
               nodesConnectable={false}
               edgesReconnectable={false}
-              nodesDraggable={false}
+              nodesDraggable={true}
               nodeTypes={nodeTypes}
               className="rounded-sm"
               zoomOnScroll={true}
