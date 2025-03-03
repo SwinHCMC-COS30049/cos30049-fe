@@ -36,8 +36,8 @@ export default function SectionWallet({ data }: { data: WalletDetailsDto }) {
           <TabsTrigger value="history" className="flex-1">
             History
           </TabsTrigger>
-          <TabsTrigger value="graph" className="flex-1">
-            Graph
+          <TabsTrigger value="neo4jgraph" className="flex-1">
+            Neo4j Graph View
           </TabsTrigger>
         </TabsList>
 
@@ -72,7 +72,7 @@ export default function SectionWallet({ data }: { data: WalletDetailsDto }) {
 
         {/* Graph Tab Content */}
         <TabsContent
-          value="graph"
+          value="neo4jgraph"
           forceMount
           className="data-[state=inactive]:hidden"
         >
