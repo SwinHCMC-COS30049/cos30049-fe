@@ -78,7 +78,7 @@ export default function SectionNeo4jGraph({ wallet }: { wallet: WalletDto }) {
       if (!neighborsData) return;
 
       const transaction = (neighborsData.data?.transactions || []).find(
-        (tx: any) => tx.hash === edge.id
+        (tx: any) => tx.hash === edge.data?.hash
       );
       if (transaction) {
         setSelectedTransaction({
@@ -119,7 +119,8 @@ export default function SectionNeo4jGraph({ wallet }: { wallet: WalletDto }) {
       const clickedLevel = Number(node.id.split("-")[1]);
 
       // Check if the node has already been expanded
-      if (expandedNodes.has(node.data.address)) {
+      const nodeExpandKey = `${node.data.address}-level-${clickedLevel}`;
+      if (expandedNodes.has(nodeExpandKey)) {
         return;
       }
 
@@ -140,7 +141,7 @@ export default function SectionNeo4jGraph({ wallet }: { wallet: WalletDto }) {
         (tx: any) => tx.destinationAddress === node.data.address
       );
 
-      // Allow expansion if the node is both a source and destination
+      // Allow expansion if the node is either a source or a destination
       if (!isSource && !isDestination) {
         return; // Don't expand if the node is neither a source nor a destination
       }
@@ -172,9 +173,12 @@ export default function SectionNeo4jGraph({ wallet }: { wallet: WalletDto }) {
         // Clear expanded nodes after this level
         setExpandedNodes((prev) => {
           const newExpandedNodes = new Set(prev);
-          selectedWallets.slice(clickedLevel).forEach((wallet) => {
-            if (wallet.type?.toLowerCase() !== "contract") {
-              newExpandedNodes.delete(wallet.address);
+          Array.from(prev).forEach(key => {
+            if (key.includes('-level-')) {
+              const keyLevel = parseInt(key.split('-level-')[1]);
+              if (keyLevel > clickedLevel) {
+                newExpandedNodes.delete(key);
+              }
             }
           });
           return newExpandedNodes;
@@ -184,7 +188,7 @@ export default function SectionNeo4jGraph({ wallet }: { wallet: WalletDto }) {
       }
 
       // Add the node to expanded nodes set
-      setExpandedNodes((prev) => new Set([...prev, node.data.address]));
+      setExpandedNodes((prev) => new Set([...prev, nodeExpandKey]));
       setSelectedWallets((prev) => [...prev, node.data]);
     },
     [selectedWallets, level, setEdges, setNodes, expandedNodes, neighborsData]
@@ -232,7 +236,9 @@ export default function SectionNeo4jGraph({ wallet }: { wallet: WalletDto }) {
 
         // Update nodes
         const sourceNode = {
-          id: `${srcWallet.address}-${level}-src`,
+          id: level === 1 
+            ? `${srcWallet.address}-${level}-root-src` 
+            : `${srcWallet.address}-${level}-from-${selectedWallets[level-2]?.address || 'unknown'}-src`,
           type: NodeType.NEO4J_WALLET_NODE,
           data: {
             ...srcWallet,
@@ -262,9 +268,11 @@ export default function SectionNeo4jGraph({ wallet }: { wallet: WalletDto }) {
             id: `${neighbor.address}-${level + 1}`,
             type: NodeType.NEO4J_WALLET_NODE,
             data: {
+              id: neighbor.address,
               address: neighbor.address,
               type: neighbor.type?.toLowerCase() || "eoa",
               transactionCount: neighbor.transactionCount || 0,
+              balance: 0, // Add required balance field
             },
             style: {
               background:
@@ -287,34 +295,41 @@ export default function SectionNeo4jGraph({ wallet }: { wallet: WalletDto }) {
         );
 
         setNodes((prevNodes) => {
-          // Filter out any existing nodes with the same addresses
+          // Filter out any existing nodes at the same level or higher
           const existingNodes = prevNodes.filter(
             (n) =>
               Number(n.id.split("-")[1]) <= level ||
               n.data.type?.toLowerCase() === "contract"
           );
 
-          // Create a set of existing addresses for quick lookup
-          const existingAddresses = new Set(
-            existingNodes.map((node) => node.data.address)
+          // Create a set of existing nodes at current level + 1 for quick lookup
+          const existingNodesAtNextLevel = new Set(
+            existingNodes
+              .filter(n => Number(n.id.split("-")[1]) === level + 1)
+              .map(node => node.data.address)
           );
 
           // Update source node position if it already exists
           const existingSourceNode = existingNodes.find(
-            (n) => n.data.address === srcWallet.address
+            (n) => n.data.address === srcWallet.address && 
+                   Number(n.id.split("-")[1]) === level
           );
+          
           if (existingSourceNode) {
             sourceNode.position = existingSourceNode.position;
-            sourceNode.data.type = existingSourceNode.data.type;
           }
 
-          // Only add neighbor nodes that don't already exist in the graph
+          // Only add neighbor nodes that don't already exist at the current level + 1
+          // AND ensure we never create a node for the current source wallet address
           const filteredNeighborNodes = [];
           for (const neighbor of neighborNodes) {
-            // Skip this neighbor if its address already exists in the graph
+            // Skip this neighbor if:
+            // 1. Its address already exists at current level + 1
+            // 2. It's the same as the source wallet (avoid self-connections)
             if (
               typeof neighbor.data?.address === "string" &&
-              !existingAddresses.has(neighbor.data.address)
+              !existingNodesAtNextLevel.has(neighbor.data.address) &&
+              neighbor.data.address !== srcWallet.address
             ) {
               filteredNeighborNodes.push(neighbor);
             }
@@ -323,33 +338,42 @@ export default function SectionNeo4jGraph({ wallet }: { wallet: WalletDto }) {
           return [...existingNodes, sourceNode, ...filteredNeighborNodes];
         });
 
-        // Update edges
-        const newEdges = (neighborsData.data?.transactions || []).map(
-          (tx: any) => ({
-            id: `${tx.hash}`,
-            source: `${tx.sourceAddress}-${level}-src`,
-            target: `${tx.destinationAddress}-${level + 1}`,
-            data: {
-              value: tx.value || "0",
-              timestamp: tx.blockTimestamp,
-            },
-            label: `${tx.value || "0"} ETH`,
-            labelStyle: { fill: "#666", fontSize: 10 },
-            labelBgStyle: { fill: "#fff", fillOpacity: 0.8 },
-            labelBgPadding: [4, 2],
-            style: {
-              stroke: "#666",
-              strokeWidth: 2,
-              strokeOpacity: 0.8,
-            },
-            markerEnd: {
-              type: "arrowclosed",
-              color: "#666",
-              width: 20,
-              height: 20,
-            },
-          })
-        );
+        // Update edges - filter out transactions that connect to the source wallet
+        const newEdges = (neighborsData.data?.transactions || [])
+          // Filter out transactions where source and destination are the same or 
+          // where the destination is the same as the source wallet
+          .filter((tx: any) => 
+            tx.sourceAddress !== tx.destinationAddress && 
+            tx.destinationAddress !== srcWallet.address
+          )
+          .map((tx: any) => {
+            // Create a unique ID for the edge
+            return {
+              id: `${tx.hash}-from-${tx.sourceAddress}-to-${tx.destinationAddress}-level-${level}`,
+              source: sourceNode.id, // Use the actual source node ID
+              target: `${tx.destinationAddress}-${level + 1}`,
+              data: {
+                value: tx.value || "0",
+                timestamp: tx.blockTimestamp,
+                hash: tx.hash, // Store original hash in data for reference
+              },
+              label: `${tx.value || "0"} ETH`,
+              labelStyle: { fill: "#666", fontSize: 10 },
+              labelBgStyle: { fill: "#fff", fillOpacity: 0.8 },
+              labelBgPadding: [4, 2],
+              style: {
+                stroke: "#666",
+                strokeWidth: 2,
+                strokeOpacity: 0.8,
+              },
+              markerEnd: {
+                type: "arrowclosed",
+                color: "#666",
+                width: 20,
+                height: 20,
+              },
+            };
+          });
 
         setEdges((prevEdges) => {
           const existingEdges = prevEdges.filter((e) => {
