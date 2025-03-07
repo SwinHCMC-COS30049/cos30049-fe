@@ -7,6 +7,7 @@ import {
 import { ActionResult } from "../action.type";
 import { DEFAULT_ACTION_ERROR_MESSAGE } from "../action.const";
 
+
 export async function searchWallet(
   formData: FormData
 ): Promise<ActionResult<SuccessGetWalletsResponse["data"]>> {

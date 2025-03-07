@@ -135,6 +135,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/transactions/graph": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["TransactionController_getGraphData"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -210,6 +226,7 @@ export interface components {
         };
         TransactionDto: {
             id: string;
+            /** Format: int64 */
             value: number;
             hash: string;
             input: string;
@@ -231,7 +248,7 @@ export interface components {
             recentTransactions: components["schemas"]["TransactionDto"][];
             firstTransaction: components["schemas"]["TransactionDto"] | null;
         };
-        GetWalletTransactionsOuput: {
+        GetWalletTransactionsOutput: {
             transactions: components["schemas"]["TransactionDto"][];
             metadata: components["schemas"]["PaginationMetadata"];
         };
@@ -475,7 +492,7 @@ export interface operations {
                         message?: string;
                         /** @default 200 */
                         statusCode: number;
-                        data?: components["schemas"]["GetWalletTransactionsOuput"];
+                        data?: components["schemas"]["GetWalletTransactionsOutput"];
                     };
                 };
             };
@@ -530,6 +547,23 @@ export interface operations {
                         error?: string;
                     };
                 };
+            };
+        };
+    };
+    TransactionController_getGraphData: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };

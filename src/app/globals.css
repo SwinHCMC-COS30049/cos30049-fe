@@ -24,7 +24,7 @@
   src: url("/fonts/Figtree/Figtree-VariableFont_wght.ttf") format("truetype");
 }
 
-/* Poppins font-family with various styles and weights */
+/* Poppins font-family with various styles  and weights */
 @font-face {
   font-family: "Poppins";
   font-style: normal;
