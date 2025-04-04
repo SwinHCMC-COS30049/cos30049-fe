@@ -23,8 +23,7 @@ export default function TransactionEdgeContextMenu({
   destinationAddress,
   blockTimestamp,
   blockNumber,
-  blockHash,
-  gas,
+
   gasUsed,
   gasPrice,
   transactionFee,
@@ -33,10 +32,10 @@ export default function TransactionEdgeContextMenu({
   // Function to safely format ETH value
   const formatEthValue = (value: string) => {
     try {
-      return value === '0' ? '0 ETH' : `${formatEther(BigInt(value))} ETH`;
+      return value === "0" ? "0 ETH" : `${formatEther(BigInt(value))} ETH`;
     } catch (error) {
-      console.error('Error formatting ETH value:', error);
-      return 'Invalid value';
+      console.error("Error formatting ETH value:", error);
+      return "Invalid value";
     }
   };
 
@@ -53,7 +52,9 @@ export default function TransactionEdgeContextMenu({
 
       {/* Transaction Hash Section */}
       <div className="flex flex-col gap-1">
-        <div className="text-sm font-medium text-gray-600">Transaction Hash</div>
+        <div className="text-sm font-medium text-gray-600">
+          Transaction Hash
+        </div>
         <div className="text-xs font-mono bg-gray-50 p-2 rounded-md break-all">
           {hash}
         </div>
@@ -62,9 +63,7 @@ export default function TransactionEdgeContextMenu({
       {/* Value Section */}
       <div className="flex flex-col gap-1">
         <div className="text-sm font-medium text-gray-600">Value</div>
-        <div className="text-xs font-mono">
-          {formatEthValue(value)}
-        </div>
+        <div className="text-xs font-mono">{formatEthValue(value)}</div>
       </div>
 
       {/* Addresses Section */}
@@ -87,12 +86,14 @@ export default function TransactionEdgeContextMenu({
       <div className="grid grid-cols-2 gap-4">
         <div className="flex flex-col gap-1">
           <div className="text-sm font-medium text-gray-600">Block Number</div>
-          <div className="text-xs font-mono">{blockNumber || 'N/A'}</div>
+          <div className="text-xs font-mono">{blockNumber || "N/A"}</div>
         </div>
         <div className="flex flex-col gap-1">
           <div className="text-sm font-medium text-gray-600">Timestamp</div>
           <div className="text-xs font-mono">
-            {blockTimestamp ? new Date(blockTimestamp * 1000).toLocaleString() : 'N/A'}
+            {blockTimestamp
+              ? new Date(blockTimestamp * 1000).toLocaleString()
+              : "N/A"}
           </div>
         </div>
       </div>
@@ -101,11 +102,13 @@ export default function TransactionEdgeContextMenu({
       <div className="grid grid-cols-2 gap-4">
         <div className="flex flex-col gap-1">
           <div className="text-sm font-medium text-gray-600">Gas Used</div>
-          <div className="text-xs font-mono">{gasUsed || 'N/A'}</div>
+          <div className="text-xs font-mono">{gasUsed || "N/A"}</div>
         </div>
         <div className="flex flex-col gap-1">
           <div className="text-sm font-medium text-gray-600">Gas Price</div>
-          <div className="text-xs font-mono">{gasPrice ? `${gasPrice} Wei` : 'N/A'}</div>
+          <div className="text-xs font-mono">
+            {gasPrice ? `${gasPrice} Wei` : "N/A"}
+          </div>
         </div>
       </div>
 

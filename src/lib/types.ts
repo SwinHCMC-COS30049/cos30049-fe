@@ -135,6 +135,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/wallets/{address}/network": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get a wallet network based on the input address */
+        get: operations["WalletController_getWalletNetwork"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/transactions/graph": {
         parameters: {
             query?: never;
@@ -282,6 +299,30 @@ export interface components {
         GetWalletTransactionsOutput: {
             transactions: components["schemas"]["TransactionDto"][];
             metadata: components["schemas"]["PaginationMetadata"];
+        };
+        WalletNetworkNode: {
+            address: string;
+            wallet: components["schemas"]["WalletDto"];
+            level: number;
+            position: {
+                x?: number;
+                y?: number;
+            };
+            direction?: Record<string, never>;
+            parent?: string;
+        };
+        WalletNetworkEdge: {
+            source: string;
+            target: string;
+            direction?: Record<string, never>;
+            transactionCount?: number;
+            totalTransactionValue?: number;
+            totalGasUsed?: number;
+        };
+        WalletNetwork: {
+            rootAddress: string;
+            nodes: components["schemas"]["WalletNetworkNode"][];
+            edges: components["schemas"]["WalletNetworkEdge"][];
         };
     };
     responses: never;
@@ -564,6 +605,48 @@ export interface operations {
                         /** @default 200 */
                         statusCode: number;
                         data?: components["schemas"]["WalletDto"][];
+                    };
+                };
+            };
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        statusCode?: number;
+                        message?: string;
+                        error?: string;
+                    };
+                };
+            };
+        };
+    };
+    WalletController_getWalletNetwork: {
+        parameters: {
+            query?: {
+                type?: "INCOMING" | "OUTGOING" | "ALL";
+                depth?: number;
+                maxWallets?: number;
+            };
+            header?: never;
+            path: {
+                address: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                        /** @default 200 */
+                        statusCode: number;
+                        data?: components["schemas"]["WalletNetwork"];
                     };
                 };
             };

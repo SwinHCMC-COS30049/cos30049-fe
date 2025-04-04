@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { Card, CardContent } from "@/components/ui/card";
@@ -16,11 +17,7 @@ import {
   Background,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
-import {
-  ErrorGetWalletNeighborsResponse,
-  WalletDto,
-} from "@/app/_api-types/wallets";
-import { SuccessGetWalletNeighborsResponse } from "@/app/_api-types/wallets";
+import { WalletDto } from "@/app/_api-types/wallets";
 import { Neo4jWalletNode } from "./graph/neo4j-wallet-node";
 import WalletNodeContextMenu, {
   WalletNodeContextMenuProps,
@@ -40,6 +37,7 @@ export default function SectionNeo4jGraph({ wallet }: { wallet: WalletDto }) {
     useState<WalletNodeContextMenuProps | null>(null);
   const contextMenuRef = useRef<HTMLDivElement | null>(null);
   const [selectedTransaction, setSelectedTransaction] = useState<any>(null);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [nodePositions, setNodePositions] = useState<
     Record<string, { x: number; y: number }>
   >({});
@@ -173,9 +171,9 @@ export default function SectionNeo4jGraph({ wallet }: { wallet: WalletDto }) {
         // Clear expanded nodes after this level
         setExpandedNodes((prev) => {
           const newExpandedNodes = new Set(prev);
-          Array.from(prev).forEach(key => {
-            if (key.includes('-level-')) {
-              const keyLevel = parseInt(key.split('-level-')[1]);
+          Array.from(prev).forEach((key) => {
+            if (key.includes("-level-")) {
+              const keyLevel = parseInt(key.split("-level-")[1]);
               if (keyLevel > clickedLevel) {
                 newExpandedNodes.delete(key);
               }
@@ -236,9 +234,12 @@ export default function SectionNeo4jGraph({ wallet }: { wallet: WalletDto }) {
 
         // Update nodes
         const sourceNode = {
-          id: level === 1 
-            ? `${srcWallet.address}-${level}-root-src` 
-            : `${srcWallet.address}-${level}-from-${selectedWallets[level-2]?.address || 'unknown'}-src`,
+          id:
+            level === 1
+              ? `${srcWallet.address}-${level}-root-src`
+              : `${srcWallet.address}-${level}-from-${
+                  selectedWallets[level - 2]?.address || "unknown"
+                }-src`,
           type: NodeType.NEO4J_WALLET_NODE,
           data: {
             ...srcWallet,
@@ -305,16 +306,17 @@ export default function SectionNeo4jGraph({ wallet }: { wallet: WalletDto }) {
           // Create a set of existing nodes at current level + 1 for quick lookup
           const existingNodesAtNextLevel = new Set(
             existingNodes
-              .filter(n => Number(n.id.split("-")[1]) === level + 1)
-              .map(node => node.data.address)
+              .filter((n) => Number(n.id.split("-")[1]) === level + 1)
+              .map((node) => node.data.address)
           );
 
           // Update source node position if it already exists
           const existingSourceNode = existingNodes.find(
-            (n) => n.data.address === srcWallet.address && 
-                   Number(n.id.split("-")[1]) === level
+            (n) =>
+              n.data.address === srcWallet.address &&
+              Number(n.id.split("-")[1]) === level
           );
-          
+
           if (existingSourceNode) {
             sourceNode.position = existingSourceNode.position;
           }
@@ -340,11 +342,12 @@ export default function SectionNeo4jGraph({ wallet }: { wallet: WalletDto }) {
 
         // Update edges - filter out transactions that connect to the source wallet
         const newEdges = (neighborsData.data?.transactions || [])
-          // Filter out transactions where source and destination are the same or 
+          // Filter out transactions where source and destination are the same or
           // where the destination is the same as the source wallet
-          .filter((tx: any) => 
-            tx.sourceAddress !== tx.destinationAddress && 
-            tx.destinationAddress !== srcWallet.address
+          .filter(
+            (tx: any) =>
+              tx.sourceAddress !== tx.destinationAddress &&
+              tx.destinationAddress !== srcWallet.address
           )
           .map((tx: any) => {
             // Create a unique ID for the edge

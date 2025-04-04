@@ -6,6 +6,8 @@ import { ReactFlowProvider } from "@xyflow/react";
 import { TransactionsTable } from "./table/transactions-table";
 import { notFound } from "next/navigation";
 import SectionNeo4jGraph from "./section-neo4j-graph";
+import SectionSankey from "./section-sankey";
+
 export default function SectionWallet({ data }: { data: WalletDetailsDto }) {
   const { wallet } = data;
 
@@ -26,7 +28,7 @@ export default function SectionWallet({ data }: { data: WalletDetailsDto }) {
 
       {/* Tabs */}
       <Tabs defaultValue="details" className="w-full">
-        <TabsList className="w-full max-w-md">
+        <TabsList className="w-full max-w-lg">
           <TabsTrigger value="details" className="flex-1">
             Details
           </TabsTrigger>
@@ -38,6 +40,10 @@ export default function SectionWallet({ data }: { data: WalletDetailsDto }) {
           </TabsTrigger>
           <TabsTrigger value="neo4jgraph" className="flex-1">
             Neo4j Graph View
+          </TabsTrigger>
+
+          <TabsTrigger value="sankey" className="flex-1">
+            Sankey
           </TabsTrigger>
         </TabsList>
 
@@ -79,6 +85,14 @@ export default function SectionWallet({ data }: { data: WalletDetailsDto }) {
           <ReactFlowProvider>
             <SectionNeo4jGraph wallet={wallet} />
           </ReactFlowProvider>
+        </TabsContent>
+
+        <TabsContent
+          value="sankey"
+          forceMount
+          className="data-[state=inactive]:hidden"
+        >
+          <SectionSankey wallet={wallet} />
         </TabsContent>
       </Tabs>
     </div>

@@ -1,4 +1,3 @@
-import { AspectRatio } from "@/components/ui/aspect-ratio";
 import Image from "next/image";
 import { Handle, Position, type Node, type NodeProps } from "@xyflow/react";
 import { WalletDto } from "@/app/_api-types/wallets";
@@ -7,19 +6,30 @@ import { WalletDto } from "@/app/_api-types/wallets";
 export type Neo4jWalletNode = Node<WalletDto>;
 
 // Neo4jWalletNode component to display wallet information in a graph node
-export default function Neo4jWalletNode({ data, selected }: NodeProps<Neo4jWalletNode>) {
+export default function Neo4jWalletNode({
+  data,
+  selected,
+}: NodeProps<Neo4jWalletNode>) {
   const isExpandable = data.transactionCount && data.transactionCount > 0;
 
   return (
     <>
       <div
-        className={`relative w-[120px] h-[120px] rounded-full shadow-lg flex items-center justify-center ${selected ? 'ring-4 ring-blue-300' : ''} ${isExpandable ? 'cursor-pointer hover:scale-105 transition-transform' : ''}`}
+        className={`relative w-[120px] h-[120px] rounded-full shadow-lg flex items-center justify-center ${
+          selected ? "ring-4 ring-blue-300" : ""
+        } ${
+          isExpandable
+            ? "cursor-pointer hover:scale-105 transition-transform"
+            : ""
+        }`}
         style={{
-          background: data.type?.toLowerCase() === 'contract' ? '#f8d7da' : '#d1e7dd',
-          borderColor: data.type?.toLowerCase() === 'contract' ? '#f5c2c7' : '#badbcc',
-          borderWidth: '2px',
-          borderStyle: 'solid',
-          boxShadow: isExpandable ? '0 0 15px rgba(0,0,0,0.1)' : 'none'
+          background:
+            data.type?.toLowerCase() === "contract" ? "#f8d7da" : "#d1e7dd",
+          borderColor:
+            data.type?.toLowerCase() === "contract" ? "#f5c2c7" : "#badbcc",
+          borderWidth: "2px",
+          borderStyle: "solid",
+          boxShadow: isExpandable ? "0 0 15px rgba(0,0,0,0.1)" : "none",
         }}
       >
         <div className="flex flex-col items-center justify-center gap-2 p-2 text-center w-full h-full">
@@ -48,8 +58,16 @@ export default function Neo4jWalletNode({ data, selected }: NodeProps<Neo4jWalle
           </div>
         </div>
       </div>
-      <Handle type="target" position={Position.Left} className="w-3 h-3 !bg-gray-400" />
-      <Handle type="source" position={Position.Right} className="w-3 h-3 !bg-gray-400" />
+      <Handle
+        type="target"
+        position={Position.Left}
+        className="w-3 h-3 !bg-gray-400"
+      />
+      <Handle
+        type="source"
+        position={Position.Right}
+        className="w-3 h-3 !bg-gray-400"
+      />
     </>
   );
 }

@@ -1,8 +1,14 @@
 import { components, paths } from "@/lib/types";
 
-export type WalletDto = components["schemas"]["WalletDto"] & { transactionCount?: number };
+export type WalletDto = components["schemas"]["WalletDto"] & {
+  transactionCount?: number;
+};
 
 export type WalletDetailsDto = components["schemas"]["GetWalletDetailsOutput"];
+
+export type WalletNetworkNode = components["schemas"]["WalletNetworkNode"];
+export type WalletNetworkEdge = components["schemas"]["WalletNetworkEdge"];
+export type WalletNetwork = components["schemas"]["WalletNetwork"];
 
 // GET /api/wallets
 export type SuccessGetWalletsResponse =
@@ -27,3 +33,8 @@ export type SuccessGetWalletNeighborsResponse =
   paths["/api/wallets/{address}/neighbors"]["get"]["responses"]["200"]["content"]["application/json"];
 export type ErrorGetWalletNeighborsResponse =
   paths["/api/wallets/{address}/neighbors"]["get"]["responses"]["500"]["content"]["application/json"];
+
+export type SuccessGetWalletNetworkResponse =
+  paths["/api/wallets/{address}/network"]["get"]["responses"]["200"]["content"]["application/json"];
+export type ErrorGetWalletNetworkResponse =
+  paths["/api/wallets/{address}/network"]["get"]["responses"]["500"]["content"]["application/json"];

@@ -1,7 +1,6 @@
 import { WalletDto } from "@/app/_api-types/wallets";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { formatEther } from "viem";
 import Link from "next/link";
 import React from "react";
 
@@ -36,7 +35,13 @@ export default function WalletNodeContextMenu({
       <div className="flex flex-col gap-1">
         <div className="text-sm font-medium text-gray-600">Type</div>
         <div className="text-xs">
-          <span className={`px-2 py-1 rounded-full ${wallet.type?.toLowerCase() === 'contract' ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'}`}>
+          <span
+            className={`px-2 py-1 rounded-full ${
+              wallet.type?.toLowerCase() === "contract"
+                ? "bg-red-100 text-red-800"
+                : "bg-green-100 text-green-800"
+            }`}
+          >
             {wallet.type}
           </span>
         </div>
